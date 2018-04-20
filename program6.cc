@@ -45,6 +45,7 @@ int main()
   int		boxWidths[] = {BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH};
   int		boxTypes[] = {vMIXED, vMIXED, vMIXED, vMIXED,  vMIXED,  vMIXED};
   BinaryFileHeader *header = new BinaryFileHeader();
+  BinaryFileRecord *record = new BinaryFileRecord();
 
   ifstream file("cs3377.bin", ios::in|ios::binary);
   if (file){
@@ -92,6 +93,13 @@ int main()
   sprintf(buffer, "%d", header->numRecords);
   setCDKMatrixCell(myMatrix, 1, 3, concatenate("NumRecords: ", buffer));
 
+  for (int i = 0;i < header->numRecords;i++){
+    file.read((char *)record, sizeof(BinaryFileRecord));
+    sprintf(buffer, "%d", record->strLength);
+    setCDKMatrixCell(myMatrix, i+2, 1, concatenate("strlen", buffer));
+    setCDKMatrixCell(myMatrix, i+2, 2, record->stringBuffer);
+  }
+
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* So we can see results, pause until a key is pressed. */
@@ -100,6 +108,8 @@ int main()
 
   // Cleanup screen
   endCDK();
+  delete header;
+  delete record;
 }
 
 char* concatenate(const char* str1, const char* str2){
