@@ -15,17 +15,19 @@ LDLIBS = -lcdk -lcurses
 # PROJECTNAME is a descriptive name used for the backup target
 # This should not contain spaces or special characters
 
-EXECFILE = cdkexample
+EXECFILE = program6
 
-OBJS = cdkexample.o
+OBJS = program6.o header.o record.o
 
 
-all: $(EXECFILE)
+program6: program6.o header.h record.h
+	g++ -o program6  -Wall program6.o -L/scratch/perkins/lib -lcdk -lcurses
+
+program6.o: program6.cc
+	g++ -c program6.cc -I/scratch/perkins/include -Wall
 
 clean:
-	rm -f $(OBJS) $(EXECFILE) *.P *~ \#*
+	rm -f *.o program6 *~
 
-
-$(EXECFILE): $(OBJS)
-	$(CXX) -o $@ $(OBJS) $(LDFLAGS) $(LDLIBS)
-
+backup:
+	tar -czf program6.cc Makefile README.txt

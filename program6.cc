@@ -7,16 +7,23 @@
  */
 
 #include <iostream>
+#include <fstream>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "header.h"
+#include "record.h"
 #include "cdk.h"
 
 
-#define MATRIX_WIDTH 4
-#define MATRIX_HEIGHT 3
-#define BOX_WIDTH 15
-#define MATRIX_NAME_STRING "Test Matrix"
+#define MATRIX_WIDTH 3
+#define MATRIX_HEIGHT 5
+#define BOX_WIDTH 20
+#define MATRIX_NAME_STRING "Binary File Contents"
 
 using namespace std;
 
+char* concatenate(const char*, const char*);
 
 int main()
 {
@@ -33,10 +40,16 @@ int main()
   // values you choose to set for MATRIX_WIDTH and MATRIX_HEIGHT
   // above.
 
-  const char 		*rowTitles[] = {"R0", "R1", "R2", "R3", "R4", "R5"};
-  const char 		*columnTitles[] = {"C0", "C1", "C2", "C3", "C4", "C5"};
+  const char 		*rowTitles[] = {"R0", "a", "b", "c", "d", "e"};
+  const char 		*columnTitles[] = {"C0", "a", "b", "c"};
   int		boxWidths[] = {BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH};
   int		boxTypes[] = {vMIXED, vMIXED, vMIXED, vMIXED,  vMIXED,  vMIXED};
+  BinaryFileHeader *header = new BinaryFileHeader();
+
+  ifstream file("cs3377.bin", ios::in|ios::binary);
+  if (file){
+    file.read((char*) header, sizeof(BinaryFileHeader));
+  }
 
   /*
    * Initialize the Cdk screen.
@@ -68,7 +81,17 @@ int main()
   /*
    * Dipslay a message
    */
-  setCDKMatrixCell(myMatrix, 2, 2, "Test Message");
+  char buffer[50];
+
+  sprintf(buffer, "%x", header->magicNumber);
+  setCDKMatrixCell(myMatrix, 1, 1, concatenate("Magic: 0x", buffer));
+
+  sprintf(buffer, "%d", header->versionNumber);
+  setCDKMatrixCell(myMatrix, 1, 2, concatenate("Version: ", buffer));
+
+  sprintf(buffer, "%d", header->numRecords);
+  setCDKMatrixCell(myMatrix, 1, 3, concatenate("NumRecords: ", buffer));
+
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* So we can see results, pause until a key is pressed. */
@@ -77,4 +100,12 @@ int main()
 
   // Cleanup screen
   endCDK();
+}
+
+char* concatenate(const char* str1, const char* str2){
+  int length = strlen(str1) + strlen(str2) + 1;
+  char *ans = new char[length];
+  strcpy(ans, str1);
+  strcat(ans, str2);
+  return ans;
 }
