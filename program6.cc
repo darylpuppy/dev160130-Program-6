@@ -1,9 +1,6 @@
-/*
- * Usage of CDK Matrix
- *
- * File:   example1.cc
- * Author: Stephen Perkins
- * Email:  stephen.perkins@utdallas.edu
+/* Daryl Vogel
+ * dev160130@utdallas.edu
+ * CS 3377.002
  */
 
 #include <iostream>
@@ -90,10 +87,10 @@ int main()
   sprintf(buffer, "%d", header->versionNumber);
   setCDKMatrixCell(myMatrix, 1, 2, concatenate("Version: ", buffer));
 
-  sprintf(buffer, "%d", header->numRecords);
+  sprintf(buffer, "%ld", header->numRecords);
   setCDKMatrixCell(myMatrix, 1, 3, concatenate("NumRecords: ", buffer));
 
-  for (int i = 0;i < header->numRecords;i++){	//Loop through the number of records there are
+  for (unsigned int i = 0;i < header->numRecords;i++){	//Loop through the number of records there are
     file.read((char *)record, sizeof(BinaryFileRecord));	//Read in one object at a time.
     sprintf(buffer, "%d", record->strLength);	//Convert it's number to a string
     setCDKMatrixCell(myMatrix, i+2, 1, concatenate("strlen", buffer));	//Print out it's info.
