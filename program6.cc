@@ -45,10 +45,11 @@ int main()
   int		boxWidths[] = {BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH};
   int		boxTypes[] = {vMIXED, vMIXED, vMIXED, vMIXED,  vMIXED,  vMIXED};
   BinaryFileHeader *header = new BinaryFileHeader();
+  BinaryFileRecord *record = new BinaryFileRecord();
 
-  ifstream file("cs3377.bin", ios::in|ios::binary);
-  if (file){
-    file.read((char*) header, sizeof(BinaryFileHeader));
+  ifstream file("cs3377.bin", ios::in|ios::binary);	//The file that we will be reading our objects from.
+  if (file){	//Check to make sure it opened properly
+    file.read((char*) header, sizeof(BinaryFileHeader));	//Read in the header object
   }
 
   /*
@@ -81,16 +82,23 @@ int main()
   /*
    * Dipslay a message
    */
-  char buffer[50];
+  char buffer[50];	//Buffer is the char* where we store the string representations of the numbers.
 
-  sprintf(buffer, "%x", header->magicNumber);
-  setCDKMatrixCell(myMatrix, 1, 1, concatenate("Magic: 0x", buffer));
+  sprintf(buffer, "%x", header->magicNumber);	//Store the numbers as strings
+  setCDKMatrixCell(myMatrix, 1, 1, concatenate("Magic: 0x", buffer));	//print those strings
 
   sprintf(buffer, "%d", header->versionNumber);
   setCDKMatrixCell(myMatrix, 1, 2, concatenate("Version: ", buffer));
 
   sprintf(buffer, "%d", header->numRecords);
   setCDKMatrixCell(myMatrix, 1, 3, concatenate("NumRecords: ", buffer));
+
+  for (int i = 0;i < header->numRecords;i++){	//Loop through the number of records there are
+    file.read((char *)record, sizeof(BinaryFileRecord));	//Read in one object at a time.
+    sprintf(buffer, "%d", record->strLength);	//Convert it's number to a string
+    setCDKMatrixCell(myMatrix, i+2, 1, concatenate("strlen", buffer));	//Print out it's info.
+    setCDKMatrixCell(myMatrix, i+2, 2, record->stringBuffer);
+  }
 
   drawCDKMatrix(myMatrix, true);    /* required  */
 
@@ -100,12 +108,15 @@ int main()
 
   // Cleanup screen
   endCDK();
+  delete header;
+  delete record;
 }
 
+//Used to concatenate 2 strings together
 char* concatenate(const char* str1, const char* str2){
-  int length = strlen(str1) + strlen(str2) + 1;
+  int length = strlen(str1) + strlen(str2) + 1;	//Find the length of the combined string
   char *ans = new char[length];
-  strcpy(ans, str1);
+  strcpy(ans, str1);	//Copy the first string and concatenate the second.
   strcat(ans, str2);
   return ans;
 }
